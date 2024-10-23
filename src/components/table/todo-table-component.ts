@@ -5,21 +5,26 @@ import { Todo } from "../../features/todo";
 import { UserIdObservingElement } from "../utils"
 
 class ToDoTableComponent extends UserIdObservingElement {
-  override subscribe() {
-    const isMyTodo = (todo: Todo) => todo.userId == this.userId || !this.userId;
-    store
-        .pipe(
-            map(model => model.todos),
-            map(todos => todos.filter(isMyTodo)),
-            distinctUntilChanged(),
-            tap(todos => {
-                const activeTodos = todos.filter(todo => !todo.completed);
-                const completedTodos = todos.filter(todo => todo.completed);
-                render(template(activeTodos, completedTodos), this);
-            })
-        )
-        .subscribe();
-  }
+    constructor() {
+        super()
+        this.attachShadow({ mode: "open" })
+    }
+
+    override subscribe() {
+        const isMyTodo = (todo: Todo) => todo.userId == this.userId || !this.userId;
+        store
+            .pipe(
+                map(model => model.todos),
+                map(todos => todos.filter(isMyTodo)),
+                distinctUntilChanged(),
+                tap(todos => {
+                    const activeTodos = todos.filter(todo => !todo.completed);
+                    const completedTodos = todos.filter(todo => todo.completed);
+                    render(template(activeTodos, completedTodos), this.shadowRoot!);
+                })
+            )
+            .subscribe();
+    }
 }
 customElements.define("todo-table", ToDoTableComponent)
 

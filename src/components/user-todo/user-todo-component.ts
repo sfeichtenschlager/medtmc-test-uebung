@@ -14,6 +14,11 @@ const template = (user: User) => html`
 `
 
 class UserTodosComponent extends UserIdObservingElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: "open" })
+    }
+
     override subscribe() {
         store
             .pipe(
@@ -23,7 +28,7 @@ class UserTodosComponent extends UserIdObservingElement {
                 distinctUntilChanged(),
                 map(template)
             )
-            .subscribe(content => render(content, this))
+            .subscribe(content => render(content, this.shadowRoot!))
     }
 }
 customElements.define("user-todos", UserTodosComponent)
